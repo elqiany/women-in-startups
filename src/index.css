@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global base */
+@layer base {
+html, body {
+@apply bg-white text-gray-900 antialiased;
+/* Allow natural scrolling (no global freeze) */
+/* overscroll-behavior intentionally left as default */
+}
+}
+
+/* Fade-in utility */
+.fade-in-up {
+opacity: 0;
+transform: translateY(30px);
+transition: all 0.8s ease-out;
+}
+.fade-in-up.visible {
+opacity: 1;
+transform: translateY(0);
+}
+
+/* Visible, styled horizontal scrollbar for the news row */
+.news-scroll {
+-webkit-overflow-scrolling: touch; /* smooth momentum on iOS */
+scrollbar-width: thin; /* Firefox */
+scrollbar-color: rgba(107,114,128,.6) rgba(0,0,0,.05); /* thumb / track */
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+.news-scroll::-webkit-scrollbar {
+height: 10px; /* thickness of the horizontal bar */
+}
+.news-scroll::-webkit-scrollbar-track {
+background: rgba(0,0,0,.05);
+border-radius: 9999px;
+}
+.news-scroll::-webkit-scrollbar-thumb {
+background: rgba(107,114,128,.6); /* gray-600-ish */
+border-radius: 9999px;
+}
+.news-scroll::-webkit-scrollbar-thumb:hover {
+background: rgba(107,114,128,.8);
+}

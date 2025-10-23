@@ -1,4 +1,3 @@
-// useNews.js / useNews.jsx
 import { useEffect, useState } from "react";
 
 const toISO = (d) => {
@@ -7,15 +6,18 @@ const toISO = (d) => {
   return Number.isNaN(t.getTime()) ? null : t.toISOString();
 };
 
-// Helper: turn "api/news.json" into an absolute URL that respects Vite base
+// --- Helper that builds the correct full URL ---
 function resolveUrl(endpoint) {
   if (!endpoint) return null;
-  if (/^https?:\/\//i.test(endpoint)) return endpoint;      // already absolute
-  const base = import.meta.env.BASE_URL || "/";             // e.g. "/women-in-startups/"
+  if (/^https?:\/\//i.test(endpoint)) return endpoint; // already absolute
+
+  // normalize: strip leading / and add .json if missing
+  let ep = String(endpoint).trim().replace(/^\/+/, "");
+  if (!/\.json($|\?)/i.test(ep)) ep = `${ep.replace(/\/+$/, "")}.json`;
+
+  const base = (import.meta.env.BASE_URL || "/").replace(/\/+$/, ""); // e.g. "/women-in-startups"
   const origin = typeof location !== "undefined" ? location.origin : "";
-  // ensure no double slashes
-  const path = `${base.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
-  return `${origin}${path}`;
+  return `${origin}${base}/${ep}`;
 }
 
 export default function useNews(endpoint = "api/news.json") {
@@ -25,19 +27,23 @@ export default function useNews(endpoint = "api/news.json") {
 
   useEffect(() => {
     let alive = true;
+
     (async () => {
       try {
         setStatus("loading");
         setError(null);
 
         const url = resolveUrl(endpoint);
-        console.log("Fetching:", url);
+        console.log("Fetching news:", url);  // ← this is where to log it
+
+        // 🟢 THIS is your fetch — it stays right here
         const res = await fetch(url, { cache: "no-store" });
+
         if (!res.ok) {
           const txt = await res.text().catch(() => "");
           throw new Error(`HTTP ${res.status}${txt ? ` • ${txt.slice(0, 160)}` : ""}`);
         }
-        // (optional) guard against 404 HTML pages masquerading as JSON
+
         const ctype = res.headers.get("content-type") || "";
         if (!ctype.includes("application/json")) {
           const txt = await res.text();
@@ -64,6 +70,7 @@ export default function useNews(endpoint = "api/news.json") {
         }
       }
     })();
+
     return () => { alive = false; };
   }, [endpoint]);
 

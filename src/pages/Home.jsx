@@ -3,6 +3,7 @@ import { Typewriter } from "react-simple-typewriter";
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import useNews from "../hooks/useNews";
+import hero from "../assets/cash-macanaya-X9Cemmq4YjM-unsplash-3.png";
 
 // /* Navbar */
 // function Navbar() {
@@ -185,7 +186,8 @@ export default function Home() {
       {/* HERO */}
       <section className="relative h-screen flex items-center justify-center">
         <img
-          src="/cash-macanaya-X9Cemmq4YjM-unsplash-3.png"
+          // src="/cash-macanaya-X9Cemmq4YjM-unsplash-3.png"
+          src = {hero}
           alt="Women building the future"
           className="block mx-auto max-w-2xl w-full h-auto"
         />

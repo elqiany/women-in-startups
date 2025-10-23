@@ -31,6 +31,7 @@ export default function useNews(endpoint = "api/news.json") {
         setError(null);
 
         const url = resolveUrl(endpoint);
+        console.long("Fetching:", url);
         const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) {
           const txt = await res.text().catch(() => "");

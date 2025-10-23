@@ -197,9 +197,14 @@ async function main() {
     .slice(0, 40)
     .map(({ _feedUrl, categories, ...rest }) => rest);
 
-  await fs.mkdir("public", { recursive: true });
-  await fs.writeFile("public/api/news.json", JSON.stringify({ items }, null, 2));
-  console.log(`✅ Wrote public/news.json with ${items.length} items`);
+    await fs.mkdir("public/api", { recursive: true });
+    await fs.writeFile("public/api/news.json", JSON.stringify({ items }, null, 2));
+    
+    // also write directly to GitHub Pages' served directory (docs/)
+    await fs.mkdir("docs/api", { recursive: true }).catch(() => {});
+    await fs.writeFile("docs/api/news.json", JSON.stringify({ items }, null, 2)).catch(() => {});
+    
+    console.log(`✅ Wrote public/api/news.json and docs/api/news.json with ${items.length} items`);
 }
 
 main().catch((e) => {

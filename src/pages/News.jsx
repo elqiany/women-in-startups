@@ -2,11 +2,8 @@ import { Link } from "react-router-dom";
 import useNews from "../hooks/useNews";
 
 export default function News() {
-  const {
-    items = [],
-    status = "idle",
-    error = null,
-  } = (typeof useNews === "function" ? useNews("/api/news") : {}) || {};
+  // Let the hook use its default ("api/news.json"), or pass "api/news.json" explicitly
+  const { items = [], status = "idle", error = null } = useNews("api/news.json");
 
   return (
     <section className="mx-auto max-w-4xl px-6 pb-24">
@@ -37,7 +34,7 @@ export default function News() {
             className="rounded-xl border border-gray-200 p-4 hover:bg-[#492201]/5 transition-colors"
           >
             <div className="text-sm text-gray-500">
-              {(it.source || "Source")} · {it.date ? new Date(it.date).toLocaleDateString() : "—"}
+              {(it.source || "Source")} · {it.dateISO ? new Date(it.dateISO).toLocaleDateString() : "—"}
             </div>
             <div className="mt-1 text-lg font-medium text-[#1a1a1a]">
               {it.title || "Untitled"}
@@ -48,21 +45,6 @@ export default function News() {
           <div className="text-gray-600">No articles right now.</div>
         )}
       </div>
-
-      {/* <div className="mx-auto mt-10 flex items-center justify-center gap-3">
-        <Link
-          to="/resources"
-          className="rounded-xl bg-[#492201] px-4 py-2 text-white font-medium hover:bg-[#492201]/90 transition-colors"
-        >
-          Explore resources
-        </Link>
-        <Link
-          to="/about"
-          className="rounded-xl ring-1 ring-[#492201]/20 px-4 py-2 text-[#492201] hover:bg-[#492201]/10 transition-colors"
-        >
-          About
-        </Link>
-      </div> */}
     </section>
   );
 }

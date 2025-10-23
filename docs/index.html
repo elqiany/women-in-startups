@@ -2,14 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <link rel="icon" type="image/svg+xml" href="/women-in-startups/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://use.typekit.net/kgv4uvn.css">
-    <title>Vite + React</title>
-    <script type="module" crossorigin src="/women-in-startups/assets/index-Bi5ZuOQU.js"></script>
+    <link rel="stylesheet" href="https://use.typekit.net/kgv4uvn.css" />
+    <title>Women in Startups</title>
+
+    <!-- GH Pages SPA restore snippet -->
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var marker = params.get("ghp-spa");
+        if (marker) {
+          params.delete("ghp-spa");
+          var cleanQuery = params.toString();
+          var newUrl = marker + (cleanQuery ? ("?" + cleanQuery) : "");
+          window.history.replaceState(null, "", newUrl);
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/women-in-startups/assets/index-DxbigyKw.js"></script>
     <link rel="stylesheet" crossorigin href="/women-in-startups/assets/index-C3vHCDmg.css">
   </head>
   <body>
     <div id="root"></div>
+    <!-- Vite entry file -->
   </body>
 </html>

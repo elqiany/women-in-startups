@@ -1,4 +1,4 @@
-// src/hooks/useNews.js (or wherever your hook lives)
+// useNews.js / useNews.jsx
 import { useEffect, useState } from "react";
 
 const toISO = (d) => {
@@ -7,10 +7,18 @@ const toISO = (d) => {
   return Number.isNaN(t.getTime()) ? null : t.toISOString();
 };
 
-// Works in dev ("/") and on GH Pages ("/women-in-startups/")
-const defaultEndpoint = `${import.meta.env.BASE_URL}news.json`;
+// Helper: turn "api/news.json" into an absolute URL that respects Vite base
+function resolveUrl(endpoint) {
+  if (!endpoint) return null;
+  if (/^https?:\/\//i.test(endpoint)) return endpoint;      // already absolute
+  const base = import.meta.env.BASE_URL || "/";             // e.g. "/women-in-startups/"
+  const origin = typeof location !== "undefined" ? location.origin : "";
+  // ensure no double slashes
+  const path = `${base.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
+  return `${origin}${path}`;
+}
 
-export default function useNews(endpoint = defaultEndpoint) {
+export default function useNews(endpoint = "api/news.json") {
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
@@ -18,38 +26,41 @@ export default function useNews(endpoint = defaultEndpoint) {
   useEffect(() => {
     let alive = true;
     (async () => {
-      setStatus("loading");
-      setError(null);
-
       try {
-        const res = await fetch(endpoint, { cache: "no-store" });
+        setStatus("loading");
+        setError(null);
+
+        const url = resolveUrl(endpoint);
+        const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) {
-          if (alive) { setStatus("error"); setError(`HTTP ${res.status}`); setItems([]); }
-          return;
+          const txt = await res.text().catch(() => "");
+          throw new Error(`HTTP ${res.status}${txt ? ` • ${txt.slice(0, 160)}` : ""}`);
+        }
+        // (optional) guard against 404 HTML pages masquerading as JSON
+        const ctype = res.headers.get("content-type") || "";
+        if (!ctype.includes("application/json")) {
+          const txt = await res.text();
+          throw new Error(`Expected JSON but got ${ctype || "unknown"} • ${txt.slice(0, 160)}`);
         }
 
-        let data;
-        try {
-          data = await res.json();
-        } catch {
-          if (alive) { setStatus("error"); setError("Bad JSON"); setItems([]); }
-          return;
-        }
-
+        const data = await res.json();
         const raw = Array.isArray(data) ? data : (data.items || []);
-        if (!Array.isArray(raw)) {
-          if (alive) { setStatus("error"); setError("API shape"); setItems([]); }
-          return;
-        }
+        if (!Array.isArray(raw)) throw new Error("API shape error: items is not an array");
 
-        const norm = raw.map((it) => ({
-          ...it,
-          date: toISO(it.date || it.publishedAt),
+        const normalized = raw.map(x => ({
+          ...x,
+          dateISO: toISO(x.date || x.pubDate || x.publishedAt),
         }));
 
-        if (alive) { setItems(norm); setStatus("success"); }
-      } catch (e) {
-        if (alive) { setStatus("error"); setError(e?.message || "Unknown"); setItems([]); }
+        if (alive) {
+          setItems(normalized);
+          setStatus("success");
+        }
+      } catch (err) {
+        if (alive) {
+          setError(err.message || String(err));
+          setStatus("error");
+        }
       }
     })();
     return () => { alive = false; };

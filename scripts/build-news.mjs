@@ -198,7 +198,7 @@ async function main() {
     .map(({ _feedUrl, categories, ...rest }) => rest);
 
   await fs.mkdir("public", { recursive: true });
-  await fs.writeFile("public/news.json", JSON.stringify({ items }, null, 2));
+  await fs.writeFile("public/api/news.json", JSON.stringify({ items }, null, 2));
   console.log(`✅ Wrote public/news.json with ${items.length} items`);
 }
 

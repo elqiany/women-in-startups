@@ -1,0 +1,13 @@
+{
+    "items": [
+      {
+        "id": "welcome-1",
+        "title": "Welcome to Women in Startups",
+        "url": "https://example.com",
+        "date": "2025-10-20T12:00:00.000Z",
+        "source": "Site",
+        "summary": "Your curated headlines will appear here.",
+        "image": null
+      }
+    ]
+  }

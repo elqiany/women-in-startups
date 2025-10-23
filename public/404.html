@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting…</title>
+    <script>
+      (function () {
+        var base = "/women-in-startups/"; // your repo name
+        var l = window.location;
+        var path = l.pathname.split(base).slice(1).join(base);
+        var q =
+          (l.search ? l.search + "&" : "?") +
+          "ghp-spa=" +
+          encodeURIComponent("/" + path) +
+          encodeURIComponent(l.hash || "");
+        l.replace(base + q);
+      })();
+    </script>
+    <noscript>
+      This site requires JavaScript.
+      <a href="/women-in-startups/">Go home</a>.
+    </noscript>
+  </head>
+  <body></body>
+</html>

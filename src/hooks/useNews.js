@@ -1,3 +1,4 @@
+// src/hooks/useNews.js (or wherever your hook lives)
 import { useEffect, useState } from "react";
 
 const toISO = (d) => {
@@ -6,7 +7,10 @@ const toISO = (d) => {
   return Number.isNaN(t.getTime()) ? null : t.toISOString();
 };
 
-export default function useNews(endpoint = "/api/news") {
+// Works in dev ("/") and on GH Pages ("/women-in-startups/")
+const defaultEndpoint = `${import.meta.env.BASE_URL}news.json`;
+
+export default function useNews(endpoint = defaultEndpoint) {
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
@@ -14,37 +18,38 @@ export default function useNews(endpoint = "/api/news") {
   useEffect(() => {
     let alive = true;
     (async () => {
-      try {
-        setStatus("loading");
-        setError(null);
+      setStatus("loading");
+      setError(null);
 
+      try {
         const res = await fetch(endpoint, { cache: "no-store" });
         if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          throw new Error(`HTTP ${res.status}${txt ? ` • ${txt.slice(0, 160)}` : ""}`);
+          if (alive) { setStatus("error"); setError(`HTTP ${res.status}`); setItems([]); }
+          return;
         }
 
-        const data = await res.json();
-        const raw = Array.isArray(data) ? data : (data.items || []);
-        if (!Array.isArray(raw)) throw new Error("API shape error: expected { items: [] }");
+        let data;
+        try {
+          data = await res.json();
+        } catch {
+          if (alive) { setStatus("error"); setError("Bad JSON"); setItems([]); }
+          return;
+        }
 
-        const normalized = raw.map((it, idx) => ({
-          id: it.id ?? `${idx}-${it.url ?? it.link ?? "na"}`,
-          url: it.url ?? it.link ?? "#",
-          title: it.title ?? "",
-          source: it.source ?? it.author ?? "",
-          date: toISO(it.date || it.isoDate || it.pubDate || it.published || it.updated),
-          summary: it.summary ?? it.contentSnippet ?? "",
-          image: it.image ?? null,
+        const raw = Array.isArray(data) ? data : (data.items || []);
+        if (!Array.isArray(raw)) {
+          if (alive) { setStatus("error"); setError("API shape"); setItems([]); }
+          return;
+        }
+
+        const norm = raw.map((it) => ({
+          ...it,
+          date: toISO(it.date || it.publishedAt),
         }));
 
-        if (!alive) return;
-        setItems(normalized);
-        setStatus("success");
+        if (alive) { setItems(norm); setStatus("success"); }
       } catch (e) {
-        if (!alive) return;
-        setError(String(e?.message || e));
-        setStatus("error");
+        if (alive) { setStatus("error"); setError(e?.message || "Unknown"); setItems([]); }
       }
     })();
     return () => { alive = false; };

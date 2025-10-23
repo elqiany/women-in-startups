@@ -176,7 +176,7 @@ export default function Home() {
     items: news = [],
     status = "idle",
     error = null,
-  } = (typeof useNews === "function" ? useNews("/api/news") : {}) || {};
+  } = (typeof useNews === "function" ? useNews() : {}) || {};
   
 
 

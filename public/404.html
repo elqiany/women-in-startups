@@ -1,25 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Redirecting…</title>
-    <script>
-      (function () {
-        var base = "/women-in-startups/"; // your repo name
-        var l = window.location;
-        var path = l.pathname.split(base).slice(1).join(base);
-        var q =
-          (l.search ? l.search + "&" : "?") +
-          "ghp-spa=" +
-          encodeURIComponent("/" + path) +
-          encodeURIComponent(l.hash || "");
-        l.replace(base + q);
-      })();
-    </script>
-    <noscript>
-      This site requires JavaScript.
-      <a href="/women-in-startups/">Go home</a>.
-    </noscript>
-  </head>
-  <body></body>
+<head>
+  <meta charset="utf-8" />
+  <title>Redirecting…</title>
+  <meta http-equiv="refresh" content="0; url=/women-in-startups/">
+  <script>
+    // SPA GitHub Pages redirect (subpath-aware)
+    (function(l) {
+      // strip the repo base from the pathname
+      var base = "/women-in-startups";
+      var path = l.pathname.startsWith(base) ? l.pathname.slice(base.length) : l.pathname;
+      // preserve query + hash
+      var newUrl = base + "/index.html?p=" + encodeURIComponent(path + l.search) + l.hash;
+      l.replace(newUrl);
+    })(window.location);
+  </script>
+</head>
+<body>Redirecting…</body>
 </html>

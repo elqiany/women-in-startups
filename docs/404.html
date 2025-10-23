@@ -4,22 +4,24 @@
     <meta charset="utf-8" />
     <title>Redirecting…</title>
     <script>
-      (function () {
-        var base = "/women-in-startups/"; // your repo name
-        var l = window.location;
-        var path = l.pathname.split(base).slice(1).join(base);
-        var q =
-          (l.search ? l.search + "&" : "?") +
-          "ghp-spa=" +
-          encodeURIComponent("/" + path) +
-          encodeURIComponent(l.hash || "");
-        l.replace(base + q);
-      })();
+      (function (l) {
+        // Your repo base (must match Vite base)
+        var base = "/women-in-startups";
+        var path = l.pathname;
+        var search = l.search || "";
+        var hash = l.hash || "";
+
+        // Ensure marker contains the FULL path under the base, not just '/news'
+        // Strip the base prefix if present, then re-attach base so it's canonical
+        var pathWithinBase = path.indexOf(base) === 0 ? path.slice(base.length) : path;
+        if (pathWithinBase && pathWithinBase[0] !== "/") pathWithinBase = "/" + pathWithinBase;
+
+        var full = base + pathWithinBase + search; // e.g. /women-in-startups/news?x=1
+        var dest = base + "/?ghp-spa=" + encodeURIComponent(full) + hash;
+
+        l.replace(dest);
+      })(window.location);
     </script>
-    <noscript>
-      This site requires JavaScript.
-      <a href="/women-in-startups/">Go home</a>.
-    </noscript>
   </head>
-  <body></body>
+  <body>Redirecting…</body>
 </html>

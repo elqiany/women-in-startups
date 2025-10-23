@@ -3,7 +3,9 @@ import useNews from "../hooks/useNews";
 
 export default function News() {
   // Let the hook use its default ("api/news.json"), or pass "api/news.json" explicitly
-  const { items = [], status = "idle", error = null } = useNews("api/news.json");
+  const ABS = "https://elqiany.github.io/women-in-startups/api/news.json";
+  const { items, status, error } = useNews(`${ABS}?v=${Date.now()}`);
+
 
   return (
     <section className="mx-auto max-w-4xl px-6 pb-24">

@@ -34,7 +34,7 @@ export default function useNews(endpoint = "api/news.json") {
         setError(null);
 
         const url = resolveUrl(endpoint);
-        console.log("Fetching news:", url);  // ← this is where to log it
+        console.log("Fetching news v2:", url);  // ← this is where to log it
 
         // 🟢 THIS is your fetch — it stays right here
         const res = await fetch(url, { cache: "no-store" });

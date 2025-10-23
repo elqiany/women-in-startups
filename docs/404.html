@@ -1,27 +1,15 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Redirecting…</title>
-    <script>
-      (function (l) {
-        // Your repo base (must match Vite base)
-        var base = "/women-in-startups";
-        var path = l.pathname;
-        var search = l.search || "";
-        var hash = l.hash || "";
-
-        // Ensure marker contains the FULL path under the base, not just '/news'
-        // Strip the base prefix if present, then re-attach base so it's canonical
-        var pathWithinBase = path.indexOf(base) === 0 ? path.slice(base.length) : path;
-        if (pathWithinBase && pathWithinBase[0] !== "/") pathWithinBase = "/" + pathWithinBase;
-
-        var full = base + pathWithinBase + search; // e.g. /women-in-startups/news?x=1
-        var dest = base + "/?ghp-spa=" + encodeURIComponent(full) + hash;
-
-        l.replace(dest);
-      })(window.location);
-    </script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/women-in-startups/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://use.typekit.net/kgv4uvn.css">
+    <title>Vite + React</title>
+    <script type="module" crossorigin src="/women-in-startups/assets/index-DJ6w-wky.js"></script>
+    <link rel="stylesheet" crossorigin href="/women-in-startups/assets/index-C3vHCDmg.css">
   </head>
-  <body>Redirecting…</body>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>

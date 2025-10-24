@@ -1,48 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function useNews() {
   const [items, setItems] = useState([]);
-  const [status, setStatus] = useState("idle");
+  const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [error, setError] = useState(null);
 
-  // this works on both local dev and GitHub Pages
+  // Use Vite base; file is checked into docs/api/news.json
   const endpoint = `${import.meta.env.BASE_URL}api/news.json`;
+
+  // tracks first load so we don't flicker later
+  const hasLoadedOnce = useRef(false);
 
   useEffect(() => {
     let alive = true;
 
     (async () => {
+      // Only show "loading" if we have nothing yet
+      if (!hasLoadedOnce.current) setStatus("loading");
+      setError(null);
+
       try {
-        setStatus("loading");
-        setError(null);
-
         const res = await fetch(endpoint, { cache: "no-store" });
-        if (!res.ok) {
-          const txt = await res.text().catch(() => "");
-          throw new Error(
-            `HTTP ${res.status}${txt ? ` • ${txt.slice(0, 160)}` : ""}`
-          );
-        }
-
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const raw = Array.isArray(data) ? data : data.items || [];
+        const raw = Array.isArray(data) ? data : (data.items || []);
         if (!Array.isArray(raw)) throw new Error("API shape error");
 
         if (alive) {
           setItems(raw);
           setStatus("success");
+          hasLoadedOnce.current = true;
         }
-      } catch (err) {
+      } catch (e) {
         if (alive) {
-          setError(err);
-          setStatus("error");
+          setError(e);
+          // If we already have items, keep showing them (no flicker)
+          setStatus(hasLoadedOnce.current ? "success" : "error");
         }
       }
     })();
 
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [endpoint]);
 
   return { items, status, error };

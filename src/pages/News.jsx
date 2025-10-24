@@ -1,52 +1,62 @@
-import { Link } from "react-router-dom";
 import useNews from "../hooks/useNews";
 
 export default function News() {
-  // Let the hook use its default ("api/news.json"), or pass "api/news.json" explicitly
-  const ABS = "https://elqiany.github.io/women-in-startups/api/news.json";
-  const { items, status, error } = useNews(`${ABS}?v=${Date.now()}`);
+  const { items, status, error } = useNews();
 
+  // First-time loading: show a clean loading state
+  if (status === "loading" && items.length === 0) {
+    return (
+      <section className="px-6 py-10 min-h-[50vh]">
+        <h1 className="text-3xl font-semibold mb-4">Latest News</h1>
+        <p className="text-gray-500">Loading…</p>
+      </section>
+    );
+  }
 
+  // Error before first data
+  if (status === "error" && items.length === 0) {
+    return (
+      <section className="px-6 py-10 min-h-[50vh]">
+        <h1 className="text-3xl font-semibold mb-4">Latest News</h1>
+        <p className="text-red-600">Couldn’t load articles. Try refresh.</p>
+      </section>
+    );
+  }
+
+  // Success or refetch (we keep items on screen)
   return (
-    <section className="mx-auto max-w-4xl px-6 pb-24">
-      <div className="mx-auto max-w-prose text-center">
-        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-[#492201]">
-          News
-        </h1>
-        <div className="mx-auto mt-3 h-1 w-16 rounded-full bg-[#492201]/80" />
-        <p className="mt-3 text-sm text-gray-500">Updates and founder stories</p>
-      </div>
-
-      {status === "loading" && (
-        <div className="mx-auto mt-8 max-w-prose text-gray-600">Loading…</div>
-      )}
-      {status === "error" && (
-        <div className="mx-auto mt-8 max-w-prose text-red-600">
-          Couldn’t load news: {String(error)}
-        </div>
-      )}
-
-      <div className="mx-auto mt-6 grid gap-4 max-w-prose md:max-w-3xl">
-        {items.map((it, i) => (
-          <a
-            key={it.id || it.url || it.link || i}
-            href={it.url || it.link || "#"}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-xl border border-gray-200 p-4 hover:bg-[#492201]/5 transition-colors"
-          >
-            <div className="text-sm text-gray-500">
-              {(it.source || "Source")} · {it.dateISO ? new Date(it.dateISO).toLocaleDateString() : "—"}
-            </div>
-            <div className="mt-1 text-lg font-medium text-[#1a1a1a]">
-              {it.title || "Untitled"}
-            </div>
-          </a>
-        ))}
-        {items.length === 0 && status !== "loading" && (
-          <div className="text-gray-600">No articles right now.</div>
+    <section className="px-6 py-10">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-3xl font-semibold">Latest News</h1>
+        {status === "loading" && items.length > 0 && (
+          <span className="text-sm text-gray-400">Refreshing…</span>
         )}
       </div>
+
+      {items.length === 0 ? (
+        <p className="text-gray-500">No articles right now.</p>
+      ) : (
+        <ul className="grid md:grid-cols-2 gap-6">
+          {items.map((n, i) => (
+            <li key={i} className="border rounded-2xl p-4 shadow-sm">
+              <a
+                href={n.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium hover:underline"
+              >
+                {n.title}
+              </a>
+              <div className="text-sm text-gray-500 mt-1">
+                {(n.source || "").trim()} {n.date ? `• ${new Date(n.date).toLocaleDateString()}` : ""}
+              </div>
+              {n.summary && (
+                <p className="mt-2 text-gray-700 line-clamp-3">{n.summary}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

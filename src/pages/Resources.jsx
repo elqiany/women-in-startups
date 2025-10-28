@@ -55,9 +55,9 @@ export default function Resources() {
 
       {/* link to full list */}
       <div className="text-center pt-3">
-        <a href="/apply" className="text-[#492201] hover:underline">
+        <Link to="/apply" className="text-[#492201] hover:underline">
           View all →
-        </a>
+        </Link>
       </div>
     </section>
   );
